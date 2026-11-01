@@ -1,0 +1,93 @@
+{
+  "name": "mon-marche",
+  "version": "1.0.0",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.19.2" }
+}
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const app = express();
+app.use(express.json());
+
+app.get('/', (req, res) =>
+  res.sendFile(path.join(__dirname, 'index.html')));
+
+app.get('/api/products', (req, res) =>
+  res.json(JSON.parse(fs.readFileSync(path.join(__dirname, 'products.json')))));
+
+app.post('/api/order', (req, res) => {
+  console.log('Nouvelle commande :', req.body);
+  res.json({ ok: true, message: 'Commande reçue, nous vous livrons bientôt !' });
+});
+
+app.listen(process.env.PORT || 3000);
+[
+  { "id": 1, "nom": "Tomate (1 kg)", "prix": 500 },
+  { "id": 2, "nom": "Oignon (1 kg)", "prix": 600 },
+  { "id": 3, "nom": "Piment (100 g)", "prix": 200 },
+  { "id": 4, "nom": "Riz local (1 kg)", "prix": 550 },
+  { "id": 5, "nom": "Haricot niébé (1 kg)", "prix": 800 },
+  { "id": 6, "nom": "Mil (1 kg)", "prix": 400 },
+  { "id": 7, "nom": "Huile (1 L)", "prix": 1200 },
+  { "id": 8, "nom": "Igname (1 kg)", "prix": 700 }
+]
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon marché</title>
+<style>
+  body{font-family:sans-serif;max-width:600px;margin:auto;padding:12px}
+  .p{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ddd}
+  button{background:#2e7d32;color:#fff;border:0;border-radius:6px;padding:8px 12px}
+  input{width:100%;padding:8px;margin:4px 0;box-sizing:border-box}
+</style>
+</head>
+<body>
+<h1>🛒 Mon marché</h1>
+<div id="liste"></div>
+<h2>Panier</h2>
+<div id="panier">Vide</div>
+<h3 id="total">Total : 0 FCFA</h3>
+<input id="nom" placeholder="Votre nom">
+<input id="tel" placeholder="Téléphone">
+<input id="adresse" placeholder="Adresse de livraison">
+<button onclick="commander()">Valider la commande</button>
+<p id="msg"></p>
+<script>
+let produits = [], panier = {};
+fetch('/api/products').then(r => r.json()).then(d => { produits = d; afficher(); });
+
+function afficher() {
+  document.getElementById('liste').innerHTML = produits.map(p =>
+    `<div class="p"><span>${p.nom}<br><b>${p.prix} FCFA</b></span>
+     <button onclick="ajouter(${p.id})">Ajouter</button></div>`).join('');
+}
+function ajouter(id) { panier[id] = (panier[id] || 0) + 1; majPanier(); }
+function majPanier() {
+  let total = 0, html = '';
+  for (const id in panier) {
+    const p = produits.find(x => x.id == id);
+    total += p.prix * panier[id];
+    html += `<div>${p.nom} × ${panier[id]}</div>`;
+  }
+  document.getElementById('panier').innerHTML = html || 'Vide';
+  document.getElementById('total').textContent = 'Total : ' + total + ' FCFA';
+}
+function commander() {
+  fetch('/api/order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nom: nom.value, tel: tel.value, adresse: adresse.value, panier
+    })
+  }).then(r => r.json()).then(d => {
+    document.getElementById('msg').textContent = d.message;
+    panier = {}; majPanier();
+  });
+}
+</script>
+</body>
+</html>
