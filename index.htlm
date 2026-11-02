@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon marché</title>
+<style>
+  body { font-family: sans-serif; margin: 0; background: #f6f6f0; }
+  header { background: #2e7d32; color: #fff; padding: 16px; font-size: 22px; font-weight: bold; }
+  main { padding: 12px; max-width: 600px; margin: auto; }
+  .p { display: flex; justify-content: space-between; align-items: center;
+       background: #fff; padding: 10px; margin-bottom: 8px; border-radius: 8px; }
+  button { font-size: 18px; padding: 6px 12px; border: 0; border-radius: 6px;
+           background: #2e7d32; color: #fff; }
+  input, select { width: 100%; box-sizing: border-box; padding: 10px;
+                  margin: 6px 0; font-size: 16px; }
+  #total { font-size: 20px; font-weight: bold; margin: 12px 0; }
+  #msg { margin-top: 12px; font-weight: bold; }
+</style>
+</head>
+<body>
+<header>Mon marché</header>
+<main>
+  <div id="liste">Chargement...</div>
+  <div id="total"></div>
+  <h3>Ma commande</h3>
+  <input id="nom" placeholder="Votre nom">
+  <input id="tel" type="tel" placeholder="Téléphone">
+  <input id="adresse" placeholder="Adresse de livraison">
+  <select id="paiement">
+    <option>Orange Money</option>
+    <option>Wave</option>
+  </select>
+  <button onclick="commander()" style="width:100%">Valider la commande</button>
+  <div id="msg"></div>
+</main>
+<script>
+let produits = [];
+const panier = {};
+const fmt = (n) => n.toLocaleString("fr-FR") + " FCFA";
+
+fetch("/api/products")
+  .then((r) => r.json())
+  .then((p) => { produits = p; afficher(); });
+
+function afficher() {
+  document.getElementById("liste").innerHTML = produits.map((p) =>
+    `<div class="p"><div><b>${p.nom}</b><br><small>${fmt(p.prix)} / ${p.unite}</small></div>
+     <div><button onclick="chg(${p.id},-1)">−</button>
+     <span style="margin:0 8px">${panier[p.id] || 0}</span>
+     <button onclick="chg(${p.id},1)">+</button></div></div>`
+  ).join("");
+  const total = produits.reduce((s, p) => s + p.prix * (panier[p.id] || 0), 0);
+  document.getElementById("total").textContent = "Total : " + fmt(total);
+}
+
+function chg(id, d) {
+  panier[id] = Math.max(0, (panier[id] || 0) + d);
+  afficher();
+}
+
+async function commander() {
+  const msg = document.getElementById("msg");
+  const lignes = Object.keys(panier)
+    .filter((id) => panier[id] > 0)
+    .map((id) => ({ id: Number(id), quantite: panier[id] }));
+  const corps = {
+    nom: document.getElementById("nom").value.trim(),
+    telephone: document.getElementById("tel").value.trim(),
+    adresse: document.getElementById("adresse").value.trim(),
+    paiement: document.getElementById("paiement").value,
+    panier: lignes,
+  };
+  try {
+    const r = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(corps),
+    });
+    const d = await r.json();
+    msg.textContent = r.ok
+      ? "Commande n°" + d.numero + " reçue. Total : " + fmt(d.total) + ". Nous vous contactons pour le paiement."
+      : d.erreur;
+  } catch (e) {
+    msg.textContent = "Erreur de connexion, réessayez.";
+  }
+}
+</script>
+</body>
+</html>
