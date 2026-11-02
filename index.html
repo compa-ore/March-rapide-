@@ -5,25 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mon marché</title>
 <style>
-  body { font-family: sans-serif; margin: 0; background: #f6f6f0; }
-  header { background: #2e7d32; color: #fff; padding: 16px; font-size: 22px; font-weight: bold; }
-  main { padding: 12px; max-width: 600px; margin: auto; }
-  .p { display: flex; justify-content: space-between; align-items: center;
-       background: #fff; padding: 10px; margin-bottom: 8px; border-radius: 8px; }
-  button { font-size: 18px; padding: 6px 12px; border: 0; border-radius: 6px;
-           background: #2e7d32; color: #fff; }
-  input, select { width: 100%; box-sizing: border-box; padding: 10px;
-                  margin: 6px 0; font-size: 16px; }
-  #total { font-size: 20px; font-weight: bold; margin: 12px 0; }
-  #msg { margin-top: 12px; font-weight: bold; }
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,sans-serif;background:#faf7f0;color:#222;padding-bottom:84px}
+header{position:sticky;top:0;z-index:5;background:#1b5e20;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+header b{font-size:20px}
+header a{color:#fff;text-decoration:none;font-size:15px}
+.hero{background:linear-gradient(135deg,#2e7d32,#f9a825);color:#fff;padding:36px 20px;text-align:center}
+.hero h1{margin:0 0 8px;font-size:27px}
+.hero p{margin:0 0 18px;font-size:16px}
+.btn{background:#e65100;color:#fff;border:0;border-radius:24px;padding:12px 24px;font-size:17px;font-weight:bold;text-decoration:none;display:inline-block}
+.promos{display:flex;gap:10px;overflow-x:auto;padding:14px}
+.promo{min-width:230px;border-radius:12px;padding:16px;color:#fff;font-weight:bold;line-height:1.4}
+.p1{background:#e65100}.p2{background:#6a1b9a}.p3{background:#00838f}.p4{background:#c62828}
+section{padding:0 14px;max-width:700px;margin:auto}
+h2{margin:18px 0 8px}
+#q{width:100%;padding:12px;font-size:16px;border:1px solid #ccc;border-radius:10px}
+#cats{display:flex;gap:8px;overflow-x:auto;padding:10px 0}
+.chip{white-space:nowrap;border:1px solid #2e7d32;background:#fff;color:#2e7d32;border-radius:20px;padding:8px 14px;font-size:15px}
+.chip.on{background:#2e7d32;color:#fff}
+#grille{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.carte{background:#fff;border-radius:12px;padding:12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.carte .e{font-size:42px}
+.carte small{color:#666}
+.qte{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:8px}
+.qte button{width:36px;height:36px;border:0;border-radius:50%;background:#2e7d32;color:#fff;font-size:20px}
+#commande input,#commande select{width:100%;padding:12px;margin:6px 0;font-size:16px;border:1px solid #ccc;border-radius:10px}
+#recap{background:#fff;border-radius:10px;padding:10px;margin-bottom:8px}
+#msg{margin-top:12px;font-weight:bold;color:#1b5e20}
+footer{text-align:center;color:#666;padding:24px 14px;font-size:14px}
+#barre{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;z-index:6}
+#tot{font-weight:bold;font-size:18px}
 </style>
 </head>
 <body>
-<header>Mon marché</header>
-<main>
-  <div id="liste">Chargement...</div>
-  <div id="total"></div>
-  <h3>Ma commande</h3>
+<header><b>🛒 Mon marché</b><a href="#commande">Ma commande</a></header>
+
+<div class="hero">
+  <h1>Faites votre marché sans vous déplacer</h1>
+  <p>Légumes frais, céréales, fruits et plus encore, livrés chez vous.</p>
+  <a class="btn" href="#produits">Commander maintenant</a>
+</div>
+
+<div class="promos">
+  <div class="promo p1">🚚 Livraison rapide dans votre quartier</div>
+  <div class="promo p2">📱 Payez avec Orange Money ou Wave</div>
+  <div class="promo p3">🥬 Produits frais du Burkina Faso</div>
+  <div class="promo p4">🔥 Offre du jour : demandez-nous nos promos !</div>
+</div>
+
+<section id="produits">
+  <h2>Nos produits</h2>
+  <input id="q" placeholder="🔍 Rechercher un produit..." oninput="chercher(this.value)">
+  <div id="cats"></div>
+  <div id="grille">Chargement...</div>
+</section>
+
+<section id="commande">
+  <h2>Ma commande</h2>
+  <div id="recap">Votre panier est vide.</div>
   <input id="nom" placeholder="Votre nom">
   <input id="tel" type="tel" placeholder="Téléphone">
   <input id="adresse" placeholder="Adresse de livraison">
@@ -31,27 +70,43 @@
     <option>Orange Money</option>
     <option>Wave</option>
   </select>
-  <button onclick="commander()" style="width:100%">Valider la commande</button>
+  <button class="btn" style="width:100%" onclick="commander()">Valider la commande</button>
   <div id="msg"></div>
-</main>
+</section>
+
+<footer>© Mon marché · Burkina Faso<br>Une question ? Contactez-nous par téléphone ou WhatsApp.</footer>
+
+<div id="barre"><span id="tot">0 FCFA</span><a class="btn" href="#commande">Voir ma commande</a></div>
+
 <script>
-let produits = [];
+let produits = [], cat = "Tous", recherche = "";
 const panier = {};
 const fmt = (n) => n.toLocaleString("fr-FR") + " FCFA";
 
-fetch("/api/products")
-  .then((r) => r.json())
-  .then((p) => { produits = p; afficher(); });
+fetch("/api/products").then((r) => r.json()).then((p) => {
+  produits = p; afficherCats(); afficher();
+});
+
+function afficherCats() {
+  const liste = ["Tous", ...new Set(produits.map((p) => p.categorie))];
+  document.getElementById("cats").innerHTML = liste.map((c) =>
+    `<button class="chip ${c === cat ? "on" : ""}" onclick="choisir('${c}')">${c}</button>`
+  ).join("");
+}
+function choisir(c) { cat = c; afficherCats(); afficher(); }
+function chercher(v) { recherche = v.toLowerCase(); afficher(); }
 
 function afficher() {
-  document.getElementById("liste").innerHTML = produits.map((p) =>
-    `<div class="p"><div><b>${p.nom}</b><br><small>${fmt(p.prix)} / ${p.unite}</small></div>
-     <div><button onclick="chg(${p.id},-1)">−</button>
-     <span style="margin:0 8px">${panier[p.id] || 0}</span>
+  const vus = produits.filter((p) =>
+    (cat === "Tous" || p.categorie === cat) && p.nom.toLowerCase().includes(recherche));
+  document.getElementById("grille").innerHTML = vus.length ? vus.map((p) =>
+    `<div class="carte"><div class="e">${p.emoji || "🛒"}</div><b>${p.nom}</b><br>
+     <small>${fmt(p.prix)} / ${p.unite}</small>
+     <div class="qte"><button onclick="chg(${p.id},-1)">−</button>
+     <span>${panier[p.id] || 0}</span>
      <button onclick="chg(${p.id},1)">+</button></div></div>`
-  ).join("");
-  const total = produits.reduce((s, p) => s + p.prix * (panier[p.id] || 0), 0);
-  document.getElementById("total").textContent = "Total : " + fmt(total);
+  ).join("") : "Aucun produit trouvé.";
+  resume();
 }
 
 function chg(id, d) {
@@ -59,10 +114,21 @@ function chg(id, d) {
   afficher();
 }
 
+function resume() {
+  let total = 0, lignes = [];
+  produits.forEach((p) => {
+    const q = panier[p.id] || 0;
+    if (q > 0) { total += p.prix * q; lignes.push(`${p.emoji || ""} ${p.nom} × ${q} = ${fmt(p.prix * q)}`); }
+  });
+  document.getElementById("tot").textContent = fmt(total);
+  document.getElementById("recap").innerHTML = lignes.length
+    ? lignes.join("<br>") + `<br><b>Total : ${fmt(total)}</b>`
+    : "Votre panier est vide.";
+}
+
 async function commander() {
   const msg = document.getElementById("msg");
-  const lignes = Object.keys(panier)
-    .filter((id) => panier[id] > 0)
+  const lignes = Object.keys(panier).filter((id) => panier[id] > 0)
     .map((id) => ({ id: Number(id), quantite: panier[id] }));
   const corps = {
     nom: document.getElementById("nom").value.trim(),
@@ -78,9 +144,13 @@ async function commander() {
       body: JSON.stringify(corps),
     });
     const d = await r.json();
-    msg.textContent = r.ok
-      ? "Commande n°" + d.numero + " reçue. Total : " + fmt(d.total) + ". Nous vous contactons pour le paiement."
-      : d.erreur;
+    if (r.ok) {
+      msg.textContent = "✅ Commande n°" + d.numero + " reçue. Total : " + fmt(d.total) + ". Nous vous contactons pour le paiement.";
+      Object.keys(panier).forEach((k) => delete panier[k]);
+      afficher();
+    } else {
+      msg.textContent = d.erreur;
+    }
   } catch (e) {
     msg.textContent = "Erreur de connexion, réessayez.";
   }
