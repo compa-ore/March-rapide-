@@ -1,0 +1,17 @@
+[
+  { "id": 1, "nom": "Tomate", "prix": 500, "unite": "kg" },
+  { "id": 2, "nom": "Oignon", "prix": 600, "unite": "kg" },
+  { "id": 3, "nom": "Piment", "prix": 1000, "unite": "kg" },
+  { "id": 4, "nom": "Aubergine", "prix": 400, "unite": "kg" },
+  { "id": 5, "nom": "Chou", "prix": 300, "unite": "pièce" },
+  { "id": 6, "nom": "Pomme de terre", "prix": 700, "unite": "kg" },
+  { "id": 7, "nom": "Igname", "prix": 800, "unite": "kg" },
+  { "id": 8, "nom": "Riz local", "prix": 600, "unite": "kg" },
+  { "id": 9, "nom": "Maïs", "prix": 350, "unite": "kg" },
+  { "id": 10, "nom": "Mil", "prix": 400, "unite": "kg" },
+  { "id": 11, "nom": "Haricot (niébé)", "prix": 800, "unite": "kg" },
+  { "id": 12, "nom": "Huile végétale", "prix": 1500, "unite": "litre" },
+  { "id": 13, "nom": "Œufs", "prix": 2000, "unite": "plateau" },
+  { "id": 14, "nom": "Poulet", "prix": 3500, "unite": "pièce" },
+  { "id": 15, "nom": "Sucre", "prix": 800, "unite": "kg" }
+]
